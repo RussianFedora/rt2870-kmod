@@ -1,0 +1,127 @@
+diff -rupN 2010_06_25_RT2870_Linux_STA_v2.4.0.0.old/Makefile 2010_06_25_RT2870_Linux_STA_v2.4.0.0/Makefile
+--- 2010_06_25_RT2870_Linux_STA_v2.4.0.0.old/Makefile	2010-06-01 01:25:21.000000000 -0400
++++ 2010_06_25_RT2870_Linux_STA_v2.4.0.0/Makefile	2010-06-26 18:55:14.000000000 -0400
+@@ -233,13 +233,6 @@ test:
+ 	$(MAKE) -C tools test
+ 
+ LINUX:
+-ifneq (,$(findstring 2.4,$(LINUX_SRC)))
+-
+-	cp -f os/linux/Makefile.4 $(RT28xx_DIR)/os/linux/Makefile
+-	$(MAKE) -C $(RT28xx_DIR)/os/linux/
+-
+-	cp -f $(RT28xx_DIR)/os/linux/rt$(CHIPSET)sta.o /tftpboot
+-else
+ 	cp -f os/linux/Makefile.6 $(RT28xx_DIR)/os/linux/Makefile
+ ifeq ($(PLATFORM),DM6446)
+ 	$(MAKE)  ARCH=arm CROSS_COMPILE=arm_v5t_le- -C  $(LINUX_SRC) SUBDIRS=$(RT28xx_DIR)/os/linux modules
+@@ -251,33 +244,20 @@ else
+ endif
+ endif
+ 
+-endif	
+ 
+ clean:
+ ifeq ($(TARGET), LINUX)
+-ifneq (,$(findstring 2.4,$(LINUX_SRC)))
+-	cp -f os/linux/Makefile.4 os/linux/Makefile
+-else
+ 	cp -f os/linux/Makefile.6 os/linux/Makefile
+-endif
+ 	$(MAKE) -C os/linux clean
+ 	rm -rf os/linux/Makefile
+ endif	
+ 
+ uninstall:
+ ifeq ($(TARGET), LINUX)
+-ifneq (,$(findstring 2.4,$(LINUX_SRC)))
+-	$(MAKE) -C $(RT28xx_DIR)/os/linux -f Makefile.4 uninstall
+-else
+ 	$(MAKE) -C $(RT28xx_DIR)/os/linux -f Makefile.6 uninstall
+ endif
+-endif
+ 
+ install:
+ ifeq ($(TARGET), LINUX)
+-ifneq (,$(findstring 2.4,$(LINUX_SRC)))
+-	$(MAKE) -C $(RT28xx_DIR)/os/linux -f Makefile.4 install
+-else
+ 	$(MAKE) -C $(RT28xx_DIR)/os/linux -f Makefile.6 install
+ endif
+-endif
+diff -rupN 2010_06_25_RT2870_Linux_STA_v2.4.0.0.old/os/linux/config.mk 2010_06_25_RT2870_Linux_STA_v2.4.0.0/os/linux/config.mk
+--- 2010_06_25_RT2870_Linux_STA_v2.4.0.0.old/os/linux/config.mk	2010-06-17 04:16:15.000000000 -0400
++++ 2010_06_25_RT2870_Linux_STA_v2.4.0.0/os/linux/config.mk	2010-06-26 18:56:42.000000000 -0400
+@@ -256,14 +256,9 @@ WFLAGS += -DRT_BIG_ENDIAN -DINF_TWINPASS
+ endif
+ 
+ ifeq ($(PLATFORM),INF_DANUBE)
+-ifneq (,$(findstring 2.4,$(LINUX_SRC)))
+-# Linux 2.4
+-WFLAGS += -DINF_DANUBE -DRT_BIG_ENDIAN
+-else
+ # Linux 2.6
+ WFLAGS += -DRT_BIG_ENDIAN
+ endif
+-endif
+ 
+ ifeq ($(PLATFORM),INF_AR9)
+ WFLAGS += -DRT_BIG_ENDIAN -DINF_AR9
+@@ -355,11 +350,7 @@ export CFLAGS
+ endif
+ 
+ ifeq ($(PLATFORM),INF_DANUBE)
+-	ifneq (,$(findstring 2.4,$(LINUX_SRC)))
+-	CFLAGS := -I$(RT28xx_DIR)/include $(WFLAGS) -Wundef -fno-strict-aliasing -fno-common -ffreestanding -Os -fomit-frame-pointer -G 0 -mno-abicalls -fno-pic -pipe -msoft-float  -mabi=32 -march=mips32 -Wa,-32 -Wa,-march=mips32 -Wa,-mips32 -Wa,--trap -I$(LINUX_SRC)/include/asm-mips/mach-generic
+-	else
+ 	CFLAGS := -I$(RT28xx_DIR)/include $(WFLAGS) -Wundef -fno-strict-aliasing -fno-common -ffreestanding -Os -fomit-frame-pointer -G 0 -mno-abicalls -fno-pic -pipe -msoft-float  -mabi=32 -march=mips32r2 -Wa,-32 -Wa,-march=mips32r2 -Wa,-mips32r2 -Wa,--trap -I$(LINUX_SRC)/include/asm-mips/mach-generic
+-	endif
+ export CFLAGS
+ endif
+ 
+@@ -389,14 +380,8 @@ export CFLAGS
+ endif
+ 
+ ifeq ($(PLATFORM),PC)
+-    ifneq (,$(findstring 2.4,$(LINUX_SRC)))
+-	# Linux 2.4
+-	CFLAGS := -D__KERNEL__ -I$(LINUX_SRC)/include -I$(RT28xx_DIR)/include -O2 -fomit-frame-pointer -fno-strict-aliasing -fno-common -pipe -mpreferred-stack-boundary=2 -march=i686 -DMODULE -DMODVERSIONS -include $(LINUX_SRC)/include/linux/modversions.h $(WFLAGS)
+-	export CFLAGS
+-    else
+ 	# Linux 2.6
+ 	EXTRA_CFLAGS := $(WFLAGS) -I$(RT28xx_DIR)/include
+-    endif
+ endif
+ 
+ #If the kernel version of RMI is newer than 2.6.27, please change "CFLAGS" to "EXTRA_FLAGS"
+@@ -447,11 +432,6 @@ export CFLAGS
+ endif
+ 
+ ifeq ($(PLATFORM),MT85XX)
+-    ifneq (,$(findstring 2.4,$(LINUX_SRC)))
+-	# Linux 2.4
+-	CFLAGS := -D__KERNEL__ -I$(LINUX_SRC)/include -I$(RT28xx_DIR)/include -O2 -fomit-frame-pointer -fno-strict-aliasing -fno-common -pipe -mpreferred-stack-boundary=2 -march=i686 -DMODULE -DMODVERSIONS -include $(LINUX_SRC)/include/linux/modversions.h $(WFLAGS)
+-	export CFLAGS
+-    else
+ 	# Linux 2.6
+ 	EXTRA_CFLAGS += $(WFLAGS) -I$(RT28xx_DIR)/include
+ 	EXTRA_CFLAGS += -D _NO_TYPEDEF_BOOL_ \
+@@ -464,18 +444,11 @@ ifeq ($(PLATFORM),MT85XX)
+ 	                -D _NO_TYPEDEF_INT32_ \
+ 	                -D _NO_TYPEDEF_INT64_ \
+ 	                
+-    endif
+ endif
+ 
+ ifeq ($(PLATFORM),NXP_TV550)
+-    ifneq (,$(findstring 2.4,$(LINUX_SRC)))
+-        # Linux 2.4
+-        CFLAGS := -D__KERNEL__ -I$(LINUX_SRC)/include -I$(RT28xx_DIR)/include -O2 -fomit-frame-pointer -fno-strict-aliasing -fno-common -pipe -mpreferred-stack-boundary=2 -march=mips -DMODULE -DMODVERSIONS -include $(LINUX_SRC)/include/linux/modversions.h $(WFLAGS)
+-        export CFLAGS
+-    else
+         # Linux 2.6
+         EXTRA_CFLAGS := $(WFLAGS) -I$(RT28xx_DIR)/include
+-    endif
+ endif
+ 
+ ifeq ($(PLATFORM),MVL5)
