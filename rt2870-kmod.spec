@@ -7,7 +7,7 @@
 
 Name:		rt2870-kmod
 Version:	2.4.0.1
-Release:	1%{?dist}
+Release:	1%{?dist}.1.R
 Summary:	Kernel module for wireless devices with Ralink's rt2870 chipsets
 
 Group:		System Environment/Kernel
